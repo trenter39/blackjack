@@ -2,18 +2,18 @@
 
 dated May 2023 and was created for university work. this desktop application follows the exact rules of actual blackjack.
 
-you can test it on your machine by installing pygame using
+you can test application on your machine by installing pygame using
 ```
 pip install pygame
 ```
-controls are simple and shows through every step.
+or run it via **.exe** file in _/dist_ directory.
 
-there are three main keys to control the flow:
+controls are simple and shows through every step. there are three main keys to control the flow:
 
-S - stand to give the dealer turn to get their cards,
+**S** - stand to give the dealer turn to get their cards,
 
-H - hit to get a card,
+**H** - hit to get a card,
 
-R - restart to start new game.
+**R** - restart to start new game.
 
 ![blackjack preview](https://github.com/trenter39/blackjack/blob/master/preview.png)

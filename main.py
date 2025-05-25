@@ -1,6 +1,18 @@
 import random
 import pygame
 
+# for export to an exe file
+import sys
+import os
+
+def get_resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+##
+
 pygame.init()
 
 width, height = 1366, 768
@@ -11,8 +23,8 @@ white = (255, 255, 255)
 green = (0, 128, 0)
 violet = (204, 153, 255)
 
-font = pygame.font.Font('CreteRound.ttf', 30)
-fontValue = pygame.font.Font('CreteRound.ttf', 48)
+font = pygame.font.Font(get_resource_path('CreteRound.ttf'), 30)
+fontValue = pygame.font.Font(get_resource_path('CreteRound.ttf'), 48)
 
 suits = ["spades", "hearts", "clubs", "diamonds"]
 values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
@@ -20,10 +32,11 @@ values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 card_images = {}
 for suit in suits:
     for value in values:
-            card_images[f"{value}_{suit}"] = pygame.image.load(f"cards/{value}_{suit}.png")
+            card_images[f"{value}_{suit}"] = pygame.image.load(
+                get_resource_path(f"cards/{value}_{suit}.png"))
 
-# card_back = pygame.image.load("cards/card_back.png") # for historic purposes
-table_pic = pygame.image.load("table.png")
+# card_back = pygame.image.load(get_resource_path("cards/card_back.png")) # for historic purposes
+table_pic = pygame.image.load(get_resource_path("table.png"))
 
 player_y = 410
 dealer_y = 120
