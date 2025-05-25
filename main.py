@@ -26,6 +26,12 @@ for suit in ["spades", "hearts", "clubs", "diamonds"]:
 card_back = pygame.image.load("cards/card_back.png")
 table_pic = pygame.image.load("table.png")
 
+def create_deck():
+    suits = ["spades", "hearts", "clubs", "diamonds"]
+    values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
+    deck = [f"{value}_{suit}" for suit in suits for value in values]
+    random.shuffle(deck)
+    return deck
 
 def draw_text(text, font, color, x, y):
     text_surface = font.render(text, True, color)
@@ -42,12 +48,14 @@ def draw_cards(hand, y):
         window.blit(card_image, (x, y))
         x += spacing
 
-def deal_initial_cards(player_hand, dealer_hand):
-    player_hand.append(random.choice(["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]) + "_" + random.choice(["spades", "hearts", "clubs", "diamonds"]))
-    dealer_hand.append(random.choice(["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]) + "_" + random.choice(["spades", "hearts", "clubs", "diamonds"]))
+def deal_initial_cards(deck, player_hand, dealer_hand):
+    player_hand.append(deck.pop())
+    dealer_hand.append(deck.pop())
+    player_hand.append(deck.pop())
 
-def deal_one_card(hand):
-    hand.append(random.choice(["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]) + "_" + random.choice(["spades", "hearts", "clubs", "diamonds"]))
+def deal_one_card(deck, hand):
+    if deck:
+        hand.append(deck.pop())
 
 def calculate_hand_value(hand):
     total = 0
@@ -68,14 +76,15 @@ def calculate_hand_value(hand):
 
 
 def game_loop():
-
-    player_hand = []
-    dealer_hand = []
     game_over = False
     quit_game = False
 
-    deal_initial_cards(player_hand, dealer_hand)
-    deal_one_card(player_hand)
+    deck = create_deck()
+    player_hand = []
+    dealer_hand = []
+    deal_initial_cards(deck, player_hand, dealer_hand)
+
+    outcome = ""
 
     while not quit_game:
         for event in pygame.event.get():
@@ -85,32 +94,40 @@ def game_loop():
             if event.type == pygame.KEYDOWN:
                 if game_over:
                     if event.key == pygame.K_r:
+                        deck = create_deck()
                         player_hand.clear()
                         dealer_hand.clear()
                         game_over = False
-                        deal_initial_cards(player_hand, dealer_hand)
-                        deal_one_card(player_hand)
+                        outcome = ""
+                        deal_initial_cards(deck, player_hand, dealer_hand)
+
                 if not game_over:
-                    if calculate_hand_value(player_hand) == 21:
+                    player_hand_value = calculate_hand_value(player_hand)
+
+                    if player_hand_value == 21:
                         outcome = "Black Jack!"
                         game_over = True
+
                     if event.key == pygame.K_h:
-                        deal_one_card(player_hand)
-                        if calculate_hand_value(player_hand) > 21:
+                        deal_one_card(deck, player_hand)
+                        player_hand_value = calculate_hand_value(player_hand)
+                        if player_hand_value > 21:
                             outcome = "Player Bust!"
                             game_over = True
-                        elif calculate_hand_value(player_hand) == 21:
-                            deal_one_card(dealer_hand)
-                            if dealer_hand_value == calculate_hand_value(player_hand):
+                        elif player_hand_value == 21:
+                            deal_one_card(deck, dealer_hand)
+                            dealer_hand_value = calculate_hand_value(dealer_hand)
+                            if dealer_hand_value == player_hand_value:
                                 outcome = "Push!"
-                                game_over = True
                             else:
                                 outcome = "You win!"
-                                game_over = True
+                            game_over = True
+
                     elif event.key == pygame.K_s:
                         while calculate_hand_value(dealer_hand) < 17:
-                            deal_one_card(dealer_hand)
+                            deal_one_card(deck, dealer_hand)
                         dealer_hand_value = calculate_hand_value(dealer_hand)
+                        player_hand_value = calculate_hand_value(player_hand)
                         if dealer_hand_value > 21:
                             outcome = "Dealer Bust!"
                         elif dealer_hand_value > player_hand_value:
@@ -137,9 +154,8 @@ def game_loop():
         if game_over:
             draw_text(outcome, fontValue, violet, 1150, 350)
             draw_text("Press R to play again!", font, white, 683, 650)
-        if not game_over:
+        else:
             draw_text("Choose an action: [H]it or [S]tand", font, white, 683, 650)
-
 
         pygame.display.update()
 
